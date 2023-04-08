@@ -5,149 +5,166 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
-#import dataframe tools
+#import necessary packages
 import pandas as pd
-import json
-
-#import matplotlib and pylab
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from pylab import title, figure, xlabel, ylabel, xticks, bar, legend, axis, savefig
-
-#import PDF tools
 from fpdf import FPDF
-
-#import datetime
-from datetime import datetime, date, timedelta
-format = '%Y-%m-%d'
+import json
+import os
+import requests
 
 class student:
     # define the student class to handle json input
-    def __init__(self, json): 
-        self.id = json["id"]
-        self.first_name = json["first_name"]
-        self.last_name = json["last_name"]
-        self.full_name = self.first_name + " " + self.last_name
-        self.performance = pd.DataFrame(json["statuses_stats"])
-        self.performance["total_count"] = self.performance["correct_count"] + self.performance["incorrect_count"]
-        self.performance["percent_correct"] = self.performance["correct_count"] / self.performance["total_count"]
-        self.performance["percent_correct100"] = self.performance["percent_correct"] *100
-        self.performance["percent_correct100int"] = self.performance["percent_correct100"].astype(int)
-        datel = []
-        for i in self.performance["submitted_at"] :
-            datel.append(datetime.strptime(i, format).date())
-        self.performance["datetime"] = datel
+    def __init__(self, json):
+        self.name = json["name"]
+        self.grade = json["grade"]
+        self.date = json["date"]
+        self.comment = json["comment"]
+        self.tester = json["tester"]
+        self.recommendation = json["recommendation"]
+        self.result = pd.DataFrame(json["assessment_data"])
+        self.question_count = len(json["assessment_data"])
+        self.total_correct = sum(self.result["accuracy"])
 
 def generateReport(json_data):
     #initialize the instance of the student
-    student1 = student(json_data)
+    student1 = student(student_data)
+    result = student1.resultstudent1 = student(json_data)
 
-    #break out time series of performance by the relevant segment, which is previous 2 months
-    performance = student1.performance
-    performance.sort_values(by="datetime", inplace=True)
+    subjectl = result["subject"].tolist()
+    accuracyl = result["accuracy"].tolist()
+    communicationl = result["communication"].tolist()
+    understandingl = result["understanding"].tolist()
+    speedl = result["speed"].tolist()
+    imgl = result["image"].tolist()
 
-    #Get today's date and set up string of today and month for future use
-    tod = date.today()
-    tod_str = tod.strftime("%Y-%m-%d")
-    tod_month = tod.strftime("%B").capitalize()
-
-    #Extract last day of previous month
-    this_first = date.today().replace(day=1)
-    prev_last = this_first - timedelta(days=1)
-    prev_first = prev_last.replace(day=1)
-
-    prev = (performance['datetime'] >= prev_first) & (performance['datetime'] <= prev_last)
-
-    df1=performance.loc[performance["datetime"]>prev_last]
-    df2=performance.loc[prev]
-    df3=performance.loc[performance["datetime"]>=prev_first]
-
-
-    totalsolved_this = sum(df1["total_count"])
-    totalcorrect_this = sum(df1["correct_count"])
-    try:
-        percentcorrect_this = int((totalcorrect_this / totalsolved_this)*100)
-    except:
-        percentcorrect_this = "n.a."
-        
-    totalsolved_prev = sum(df2["total_count"])
-    totalcorrect_prev = sum(df2["correct_count"])
-    try:
-        percentcorrect_prev = int((totalcorrect_prev / totalsolved_prev)*100)
-    except:
-        percentcorrect_prev = "n.a."
-
-    #get sums of the total cumulative sessions and questions
-    prepbox_sessions = max(performance.index)
-    prepbox_questions = sum(performance["total_count"])
-
-    #convert dates to string
-    join_date = min(performance["datetime"])
-    join_date_str = join_date.strftime("%Y-%m-%d")
-    join_date_str
-
-    #generate graph
-    fig, ax1 = plt.subplots(1, 1, figsize=(5, 3))
-    ax2 = ax1.twinx()
-
-    x= df3["submitted_at"]
-    y1=df3["total_count"]
-    y2=df3["percent_correct100"]
-
-    ax1.plot(x, y1, label="Number of Problems Solved",color="orange")
-    ax2.bar(x, y2, 0.5, label="Percentage Correct")
-    ax1.set_xlabel('Date of Session')
-    ax1.set_ylabel('Number of Problems Solved')
-    ax2.set_ylabel('Perentage Correct')
-    fig.savefig('performance.png')
-
-    #Cell(float w [, float h [, string txt [, mixed border [, int ln [, string align [, boolean fill [, mixed link]]]]]]])
     pdf = FPDF()
     pdf.add_page()
+
+    #set up of the header
     pdf.set_xy(0, 0)
     pdf.set_font('arial', 'B', 12)
-    pdf.image('myapp/Prepbox_logo2.png', x = 15, y = 10, w = 40, h = 0, type = '', link = '')
+    pdf.image(os.path.join("/Users/skwon/Documents/PDFmaker/Prepbox_logo2.png"), x = 15, y = 10, w = 40, h = 0, type = '', link = '')
     pdf.ln(26)
-    pdf.cell(190, 10, "PrepBox Bi-weekly Report for "+ student1.full_name +" for "+ tod_month + " " + str(tod.year), 0, 1, 'C')
-    pdf.set_font('arial', 'B', 11)
+    #title
+    pdf.cell(190, 10, "Grade Level Assessment Test Result for "+ student1.name, 0, 1, 'C')
+    #body
+    pdf.set_font('arial', 'B', 9)
+    #Summary part
     pdf.ln(3)
     pdf.cell(7)
-    pdf.cell(100, 10, "Student summary", 0, 1, "L")
-    pdf.set_font('arial', '', 11)
+    pdf.set_fill_color(91,155,213)
+    pdf.set_text_color(255,255,255)
+    pdf.cell(80, 5.5, "Level Test Summary", 0, 1, "L", fill=True)
+    pdf.set_fill_color(0,0,0)
+    pdf.set_text_color(0,0,0)
+    pdf.set_font('arial', '', 9)
     pdf.cell(7)
-    pdf.cell(70, 7, "Student Join Date:", 0, 0, 'L')
-    pdf.cell(30, 7, join_date_str, 0, 1, 'R')
+    pdf.cell(50, 5.5, "Student Name:", 0, 0, 'L')
+    pdf.cell(30, 5.5, student1.name, 0, 1, 'R')
     pdf.cell(7)
-    pdf.cell(70, 7, "Total PrepBox Sessions to Date:", 0, 0, 'L')
-    pdf.cell(30, 7, str(prepbox_sessions), 0, 1, 'R')
+    pdf.cell(50, 5.5, "Student Grade:", 0, 0, 'L')
+    pdf.cell(30, 5.5, str(student1.grade), 0, 1, 'R')
     pdf.cell(7)
-    pdf.cell(70, 7, "Total PrepBox Questions Solved:", 0, 0, 'L')
-    pdf.cell(30, 7, str(prepbox_questions), 0, 1, 'R')
+    pdf.cell(50, 5.5, "Test Date:", 0, 0, 'L')
+    pdf.cell(30, 5.5, str(student1.date), 0, 1, 'R')
+    pdf.cell(7)
+    pdf.cell(50, 5.5, "Tester:", 0, 0, 'L')
+    pdf.cell(30, 5.5, str(student1.tester), 0, 1, 'R')
     pdf.ln(5)
-    pdf.set_font('arial', 'B', 11)
+    #The results
+    pdf.set_font('arial', 'B', 9)
+    pdf.set_fill_color(91,155,213)
+    pdf.set_text_color(255,255,255)
     pdf.cell(7)
-    pdf.cell(100, 10, "Student activity for current and previous month", 0, 1, "L")
-    pdf.ln(1)
-    pdf.cell(8)
-    pdf.set_font('arial', '', 11)
-    pdf.cell(60, 7, "Category", 1, 0, 'L')
-    pdf.cell(30, 7, str("This month"), 1, 0, "R")
-    pdf.cell(30, 7, str("Last month"), 1, 1, "R")
-    pdf.cell(8)
-    pdf.cell(60, 7, "Questions solved", 1, 0, 'L')
-    pdf.cell(30, 7, str(totalsolved_this), 1, 0, "R")
-    pdf.cell(30, 7, str(totalsolved_prev), 1, 1, "R")
-    pdf.cell(8)
-    pdf.cell(60, 7, "Questions solved correctly", 1, 0, 'L')
-    pdf.cell(30, 7, str(totalcorrect_this), 1, 0, "R")
-    pdf.cell(30, 7, str(totalcorrect_prev), 1, 1, "R")
-    pdf.cell(8)
-    pdf.cell(60, 7, "Percentage correct", 1, 0, 'L')
-    pdf.cell(30, 7, str(percentcorrect_this), 1, 0, "R")
-    pdf.cell(30, 7, str(percentcorrect_prev), 1, 1, "R")
-    pdf.ln(3)
-    # pdf.cell(2.5)
-    # pdf.cell(190, 10, "Summary chart for the previous two months", 0, 1, 'C')
+    pdf.cell(90, 5.5, "Subject", 0, 0, "L", fill=True)
+    pdf.cell(30, 5.5, "Accuracy", 0, 0, "R", fill=True)
+    pdf.cell(30, 5.5, "Proof of work", 0, 0, "R", fill=True)
+    pdf.cell(30, 5.5, "Understanding", 0, 1, "R", fill=True)
+    pdf.set_fill_color(0,0,0)
+    pdf.set_text_color(0,0,0)
+    pdf.set_font('arial', '', 10)
+    for i in range(0,student1.question_count):
+        pdf.cell(7)
+        pdf.cell(90, 5.5, "Q"+str(i+1)+ ".: "+subjectl[i], 0, 0, "L")
+        pdf.cell(30, 5.5, str(accuracyl[i]), 0, 0, "R")
+        pdf.cell(30, 5.5, str(communicationl[i]), 0, 0, "R")
+        pdf.cell(30, 5.5, str(understandingl[i]), 0, 1, "R")
+    pdf.cell(7)
+    pdf.set_font('arial', 'B', 9)
+    pdf.cell(90, 5.5, "Total Score", "T", 0, "L")
+    pdf.cell(30, 5.5, str(sum(accuracyl)), "T", 0, "R")
+    pdf.cell(30, 5.5, str(sum(communicationl)), "T", 0, "R")
+    pdf.cell(30, 5.5, str(sum(understandingl)), "T", 1, "R")
+
+    pdf.ln(5)
+    pdf.cell(7)
+    pdf.cell(140, 5.5, "Total Combined Score", 0, 0, "L")
+    pdf.cell(40, 5.5, str(82), 0, 1, "R")
+    pdf.cell(7)
+    pdf.cell(140, 5.5, "Time Spent", 0, 0, "L")
+    pdf.cell(40, 5.5, str("120 minutes"), 0, 1, "R")
+
+    pdf.ln(5)
+    pdf.set_font('arial', 'B', 9)
+    pdf.set_fill_color(91,155,213)
+    pdf.set_text_color(255,255,255)
+    pdf.cell(7)
+    pdf.cell(25, 5.5, " Category", 1, 0, "L", fill=True)
+    pdf.cell(95, 5.5, str("Description"), 1, 0, "C", fill=True)
+    pdf.cell(20, 5.5, str("Score"), 1, 0, "C", fill=True)
+    pdf.cell(40, 5.5, str("Recommendation"), 1, 1, "C", fill=True)
+    pdf.set_font('arial', '', 9)
+    pdf.set_fill_color(255,255,255)
+    pdf.set_text_color(0,0,0)
+    pdf.cell(7)
+    pdf.cell(25, 5.5, " Accuracy", 1, 0, "L")
+    pdf.cell(95, 5.5, "Whether the answer was right or wrong", 1, 0, "C")
+    pdf.cell(20, 5.5, str("Sco123re"), 1, 0, "C")
+    pdf.cell(40, 5.5, str("Needs improvement"), 1, 1, "C")
+    pdf.cell(7)
+    pdf.cell(25, 5.5, " Speed", 1, 0, "L")
+    pdf.cell(95, 5.5, "How the long student took to complete", 1, 0, "C")
+    pdf.cell(20, 5.5, str("123"), 1, 0, "C")
+    pdf.cell(40, 5.5, str("Needs improvement"), 1, 1, "C")
+    pdf.cell(7)
+    pdf.cell(25, 5.5, " Communication", 1, 0, "L")
+    pdf.cell(95, 5.5, "How clean the student shows proof of work and steps", 1, 0, "C")
+    pdf.cell(20, 5.5, str("123"), 1, 0, "C")
+    pdf.cell(40, 5.5, str("Needs improvement"), 1, 1, "C")
+    pdf.cell(7)
+    pdf.cell(25, 5.5, " Understanding", 1, 0, "L")
+    pdf.cell(95, 5.5, "How much the student's work demonstrate clear understanding", 1, 0, "C")
+    pdf.cell(20, 5.5, str("213123"), 1, 0, "C")
+    pdf.cell(40, 5.5, str("Needs improvement"), 1, 1, "C")
+    pdf.ln(5)
+    pdf.cell(7)
+    pdf.set_fill_color(91,155,213)
+    pdf.set_text_color(255,255,255)
+    pdf.set_font('arial', 'B', 9)
+    pdf.cell(25, 30, " Result", 1, 0, "L", fill=True)
+    pdf.set_fill_color(255,255,255)
+    pdf.set_text_color(0,0,0)
+    pdf.set_font('arial', '', 9)
+    pdf.cell(155, 30, student1.comment, 1, 0, "C")
+    for url in imgl:
+        # Download the image
+        response = requests.get(url)
+        if response.status_code == 200:
+            # Add a new page to the PDF
+            pdf.add_page()
+
+            # Get the dimensions of the downloaded image
+            with open("image.jpg", "wb") as f:
+                f.write(response.content)
+
+        # Add the image to the PDF
+        pdf.image("image.jpg", x=15, y=15, w=150, h=150)
+
+    else:
+        # Print an error message if the image can't be downloaded
+        print(f"Failed to download image from {url}: {response.status_code}")
+
+
     pdf_data = pdf.output(dest='S').encode('latin1')
     response = HttpResponse(pdf_data, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="filename.pdf"'
