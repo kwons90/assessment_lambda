@@ -9,7 +9,6 @@ from django.http import JsonResponse
 import pandas as pd
 from fpdf import FPDF
 import json
-import os
 import requests
 
 class student:
@@ -43,7 +42,7 @@ def generateReport(json_data):
     #set up of the header
     pdf.set_xy(0, 0)
     pdf.set_font('arial', 'B', 12)
-    pdf.image(os.path.join("/Users/skwon/Documents/PDFmaker/Prepbox_logo2.png"), x = 15, y = 10, w = 40, h = 0, type = '', link = '')
+    pdf.image("myapp/Prepbox_logo2.png", x = 15, y = 10, w = 40, h = 0, type = '', link = '')
     pdf.ln(26)
     #title
     pdf.cell(190, 10, "Grade Level Assessment Test Result for "+ student1.name, 0, 1, 'C')
