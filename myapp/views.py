@@ -26,8 +26,8 @@ class student:
 
 def generateReport(json_data):
     #initialize the instance of the student
-    student1 = student(student_data)
-    result = student1.resultstudent1 = student(json_data)
+    student1 = student(json_data)
+    result = student1.result
 
     subjectl = result["subject"].tolist()
     accuracyl = result["accuracy"].tolist()
