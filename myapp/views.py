@@ -132,7 +132,7 @@ def generateReport(json_data):
     pdf.cell(40, 5, str(weighted_score_percent)+"%", 0, 1, "R")
     pdf.cell(7)
     pdf.cell(140, 5, "Time Spent", 0, 0, "L")
-    pdf.cell(40, 5, str(sum(timel))+" minutes", 0, 1, "R")
+    pdf.cell(40, 5, str(speed)+" minutes", 0, 1, "R")
 
     pdf.ln(5)
     pdf.set_font('arial', 'B', 9)
