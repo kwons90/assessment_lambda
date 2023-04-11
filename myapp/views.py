@@ -158,7 +158,7 @@ def generateReport(json_data):
     pdf.cell(25, 5.5, " Speed", 1, 0, "L")
     pdf.cell(95, 5.5, "How the long student took to complete", 1, 0, "C")
     pdf.cell(25, 5.5, str(speed)+" minutes", 1, 0, "C")
-    if speed < 90:
+    if speed > 90:
         pdf.cell(35, 5.5, str("Needs improvement"), 1, 1, "C")
     else:
         pdf.cell(35, 5.5, str("Satisfactory"), 1, 1, "C")
