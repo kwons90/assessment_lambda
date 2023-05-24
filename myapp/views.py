@@ -19,6 +19,11 @@ class student:
         self.date = json["date"]
         self.comment = json["comment"]
         self.tester = json["tester"]
+        self.school = json["school"]
+        self.state = json["state"]
+        self.country = json["country"]
+        self.parent_email = json["parent_email"]
+        self.curriculum = json["curriculum"]
         self.recommendation = json["recommendation"]
         self.result = pd.DataFrame(json["assessment_data"])
         self.question_count = len(json["assessment_data"])
@@ -63,16 +68,28 @@ def generateReport(json_data):
     pdf.cell(7)
     pdf.set_fill_color(91,155,213)
     pdf.set_text_color(255,255,255)
-    pdf.cell(80, 5, "Level Test Summary", 0, 1, "L", fill=True)
+    pdf.cell(80, 5, "Level Test Summary", 0, 0, "L", fill=True)
+    pdf.cell(30, 5, "", 0, 0, 'R')
+    pdf.cell(60, 5, "Recommendation", 0, 1, 'L', fill=True)
     pdf.set_fill_color(0,0,0)
     pdf.set_text_color(0,0,0)
     pdf.set_font('arial', '', 9)
     pdf.cell(7)
     pdf.cell(50, 5, "Student Name:", 0, 0, 'L')
-    pdf.cell(30, 5, student1.name, 0, 1, 'R')
+    pdf.cell(30, 5, student1.name, 0, 0, 'R')
+    pdf.cell(30, 5, "", 0, 0, 'R')
+    pdf.set_font('arial', 'B', 9)
+    pdf.cell(60, 5, student1.recommendation, 0, 1, 'L')
+    pdf.set_font('arial', '', 9)
     pdf.cell(7)
     pdf.cell(50, 5, "Student Grade:", 0, 0, 'L')
     pdf.cell(30, 5, str(student1.grade), 0, 1, 'R')
+    pdf.cell(7)
+    pdf.cell(50, 5, "School:", 0, 0, 'L')
+    pdf.cell(30, 5, student1.school, 0, 1, 'R')
+    pdf.cell(7)
+    pdf.cell(50, 5, "State / Country:", 0, 0, 'L')
+    pdf.cell(30, 5, student1.school + " / "+ student1.country, 0, 1, 'R')
     pdf.cell(7)
     pdf.cell(50, 5, "Test Date:", 0, 0, 'L')
     pdf.cell(30, 5, str(student1.date), 0, 1, 'R')
