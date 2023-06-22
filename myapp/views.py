@@ -339,6 +339,7 @@ def api_view(request):
         except json.decoder.JSONDecodeError as e:
             return JsonResponse({'success': False, 'error': str(e)})
 
+@csrf_exempt
 def api_view_collision(request):
     if request.method == 'POST':
         try:
