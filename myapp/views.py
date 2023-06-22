@@ -344,7 +344,7 @@ def api_view_collision(request):
         try:
             #    data = json.load(f)
             data = json.loads(request.body)
-            response = generateReport(data)
+            response = generateReportCollision(data)
             return response 
         except json.decoder.JSONDecodeError as e:
             return JsonResponse({'success': False, 'error': str(e)})
