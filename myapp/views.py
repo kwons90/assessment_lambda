@@ -220,6 +220,113 @@ def generateReport(json_data):
     # pdf.output(response, 'F')
     return response
 
+def generateReportCollision(json_data):
+    #initialize the instance of the student
+    student1 = student(json_data)
+    result = student1.result
+    accu_weight = 1
+    commu_weight = 2
+    under_weight = 2
+    speed = sum(result.speed)
+
+    subjectl = result["subject"].tolist()
+    accuracyl = result["accuracy"].tolist()
+    communicationl = result["communication"].tolist()
+    understandingl = result["understanding"].tolist()
+    speedl = result["speed"].tolist()
+    imgl = result["image"].tolist()
+
+    pdf = FPDF()
+    pdf.add_page()
+
+    #set up of the header
+    pdf.set_xy(0, 0)
+    pdf.set_font('arial', 'B', 12)
+    pdf.image('myapp/Prepbox_logo2.png', x = 15, y = 10, w = 40, h = 0, type = '', link = '')
+    pdf.ln(25)
+    #title
+    pdf.cell(190, 10, "Collision PrepBox Competition Result - "+ student1.name, 0, 1,"C")
+    #body
+    pdf.set_font('arial', 'B', 9)
+    #Summary part
+    pdf.ln(5)
+    pdf.cell(7)
+    pdf.cell(50, 5, "Contestant Name:", 0, 0, 'L')
+    pdf.cell(30, 5, student1.name, 0, 0, 'R')
+    pdf.cell(30, 5, "", 0, 0, 'R')
+    pdf.set_font('arial', '', 9)
+    pdf.cell(7)
+    pdf.cell(50, 5, "Test Date:", 0, 0, 'L')
+    pdf.cell(30, 5, str(student1.date), 0, 1, 'R')
+    #The results
+    pdf.set_font('arial', 'B', 9)
+    pdf.set_fill_color(91,155,213)
+    pdf.set_text_color(255,255,255)
+    pdf.cell(7)
+    pdf.cell(90, 5, "Subject", 0, 0, "L", fill=True)
+    pdf.cell(30, 5, "Correct", 0, 1, "R", fill=True)
+    pdf.set_fill_color(0,0,0)
+    pdf.set_text_color(0,0,0)
+    pdf.set_font('arial', '', 10)
+    for i in range(0,student1.question_count):
+        pdf.cell(7)
+        pdf.cell(90, 5, "Q"+str(i+1)+ ".: "+subjectl[i], 0, 0, "L")
+        pdf.cell(30, 5, str(accuracyl[i]), 0, 1, "R")
+    pdf.cell(7)
+    pdf.set_font('arial', 'B', 9)
+    pdf.cell(90, 5, "Total Score", "T", 0, "L")
+    pdf.cell(30, 5, str(sum(accuracyl)), "T", 1, "R")
+
+    # weighted_score = sum(accuracyl)*accu_weight + sum(communicationl)*commu_weight + sum(understandingl)*under_weight
+    # total_score = (accu_weight+commu_weight+under_weight)*student1.question_count
+    # weighted_score_percent = int((weighted_score/total_score)*100)
+    accu_score = int(((sum(accuracyl)*accu_weight) / (student1.question_count*accu_weight))*100)
+    # commu_score = int(((sum(communicationl)*commu_weight) / (student1.question_count*commu_weight))*100)
+    # under_score = int(((sum(understandingl)*under_weight) / (student1.question_count*under_weight))*100)
+
+    pdf.ln(5)
+    pdf.cell(7)
+    pdf.cell(140, 5, "Total Score", 0, 0, "L")
+    pdf.cell(40, 5, str(accu_score)+"%", 0, 1, "R")
+    pdf.cell(7)
+    pdf.cell(140, 5, "Time Spent", 0, 0, "L")
+    pdf.cell(40, 5, str(speed)+" minutes", 0, 1, "R")
+
+    pdf.ln(5)
+    pdf.set_font('arial', 'B', 9)
+    pdf.set_fill_color(91,155,213)
+    pdf.set_text_color(255,255,255)
+    pdf.cell(7)
+    pdf.cell(25, 5.5, " Category", 1, 0, "L", fill=True)
+    pdf.cell(95, 5.5, str("Description"), 1, 0, "C", fill=True)
+    pdf.cell(25, 5.5, str("Score"), 1, 1, "C", fill=True)
+    pdf.set_font('arial', '', 9)
+    pdf.set_fill_color(255,255,255)
+    pdf.set_text_color(0,0,0)
+    pdf.cell(7)
+    pdf.cell(25, 5.5, " Accuracy", 1, 0, "L")
+    pdf.cell(95, 5.5, "Whether the answer was right or wrong", 1, 0, "C")
+    pdf.cell(25, 5.5, str(accu_score)+"% "+str(sum(accuracyl)*accu_weight)+" / "+str(student1.question_count*accu_weight), 1, 1, "C")
+    pdf.cell(7)
+    pdf.cell(25, 5.5, " Speed", 1, 0, "L")
+    pdf.cell(95, 5.5, "How the long student took to complete", 1, 0, "C")
+    pdf.cell(25, 5.5, str(speed)+" minutes", 1, 1, "C")
+    pdf.ln(5)
+    pdf.cell(7)
+    
+    for i in range(0,student1.question_count):
+        # Download the image
+        getImage(imgl[i], i)
+            
+        pdf.add_page()
+        pdf.image(str(i)+".jpg", x=15, y=15, w=150, h=150)
+
+
+    pdf_data = pdf.output(dest='S').encode('latin1')
+    response = HttpResponse(pdf_data, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="filename.pdf"'
+    # pdf.output(response, 'F')
+    return response
 
 @csrf_exempt
 def api_view(request):
@@ -231,6 +338,17 @@ def api_view(request):
             return response 
         except json.decoder.JSONDecodeError as e:
             return JsonResponse({'success': False, 'error': str(e)})
+
+def api_view_collision(request):
+    if request.method == 'POST':
+        try:
+            #    data = json.load(f)
+            data = json.loads(request.body)
+            response = generateReport(data)
+            return response 
+        except json.decoder.JSONDecodeError as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
 
 @csrf_exempt
 def index(request):

@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from myapp.views import index, api_view
+from myapp.views import index, api_view, api_view_collision
 
 urlpatterns = [
     path('', index, name='index'),
     path('api/', api_view, name='api_view'),
+    path('api_collision/', api_view_collision, name="api_view_collision")
 ]
