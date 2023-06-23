@@ -317,7 +317,7 @@ def generateReportCollision(json_data):
         pdf.ln(10)
         pdf.set_font('arial', 'B', 13)
         pdf.cell(7)
-        pdf.cell(24, 7, " Question"+str(i), 0, 0, "L")
+        pdf.cell(24, 7, " Question "+str(i+1), 0, 0, "L")
         pdf.image(str(i)+".jpg", x=18, y=35, w=150, h=109.489)
 
     pdf_data = pdf.output(dest='S').encode('latin1')
