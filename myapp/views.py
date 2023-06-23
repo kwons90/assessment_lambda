@@ -17,6 +17,7 @@ class student:
         self.name = json["name"]
         self.grade = json["grade"]
         self.date = json["date"]
+        self.grade_level = json["grade_level"]
         self.comment = json["comment"]
         self.tester = json["tester"]
         self.school = json["school"]
@@ -42,7 +43,7 @@ def generateReport(json_data):
     accu_weight = 1
     commu_weight = 2
     under_weight = 2
-    speed = sum(result.speed)
+    speed = round(sum(result.speed),2)
 
     subjectl = result["subject"].tolist()
     accuracyl = result["accuracy"].tolist()
@@ -225,13 +226,10 @@ def generateReportCollision(json_data):
     student1 = student(json_data)
     result = student1.result
     accu_weight = 1
-    speed = sum(result.speed)
+    speed = round(sum(result.speed),2)
 
     subjectl = result["subject"].tolist()
     accuracyl = result["accuracy"].tolist()
-    communicationl = result["communication"].tolist()
-    understandingl = result["understanding"].tolist()
-    speedl = result["speed"].tolist()
     imgl = result["image"].tolist()
 
     pdf = FPDF()
@@ -261,55 +259,69 @@ def generateReportCollision(json_data):
     pdf.set_fill_color(57, 143, 229)
     pdf.set_text_color(255,255,255)
     pdf.cell(10)
-    pdf.cell(120, 7, "Question", 0, 0, "L", fill=True)
-    pdf.cell(30, 7, "Score", 0, 1, "R", fill=True)
+    pdf.cell(120, 6, "Question", 0, 0, "L", fill=True)
+    pdf.cell(30, 6, "Score", 0, 1, "R", fill=True)
     pdf.set_fill_color(0,0,0)
     pdf.set_text_color(0,0,0)
     pdf.set_font('arial', '', 11)
     for i in range(0,student1.question_count):
         pdf.cell(10)
-        pdf.cell(120, 7, "Q"+str(i+1)+ ".: "+subjectl[i], 0, 0, "L")
-        pdf.cell(30, 7, str(accuracyl[i]), 0, 1, "R")
+        pdf.cell(120, 6, "Q"+str(i+1)+ ".: "+subjectl[i], 0, 0, "L")
+        pdf.cell(30, 6, str(accuracyl[i]), 0, 1, "R")
     pdf.cell(10)
     pdf.set_font('arial', 'B', 11)
-    pdf.cell(120, 7, "Total Score", "T", 0, "L")
-    pdf.cell(30, 7, str(sum(accuracyl)), "T", 1, "R")
+    pdf.cell(120, 6, "Total Score", "T", 0, "L")
+    pdf.cell(30, 6, str(sum(accuracyl)), "T", 1, "R")
     accu_score = int(((sum(accuracyl)*accu_weight) / (student1.question_count*accu_weight))*100)
     pdf.ln(5)
     pdf.cell(10)
-    pdf.cell(120, 7, "Total Score", 0, 0, "L")
-    pdf.cell(30, 7, str(accu_score)+"%", 0, 1, "R")
+    pdf.cell(120, 6, "Total Score", 0, 0, "L")
+    pdf.cell(30, 6, str(accu_score)+"%", 0, 1, "R")
     pdf.cell(10)
-    pdf.cell(120, 7, "Time Spent", 0, 0, "L")
-    pdf.cell(30, 7, str(speed)+" minutes", 0, 1, "R")
+    pdf.cell(120, 6, "Time Spent", 0, 0, "L")
+    pdf.cell(30, 6, str(speed)+" minutes", 0, 1, "R")
     pdf.ln(5)
     pdf.set_font('arial', 'B', 11)
     pdf.set_fill_color(57, 143, 229)
     pdf.set_text_color(255,255,255)
     pdf.cell(10)
-    pdf.cell(25, 7, "Criteria", 1, 0, "L", fill=True)
-    pdf.cell(45, 7, str("Description"), 1, 0, "C", fill=True)
-    pdf.cell(30, 7, str("Score"), 1, 0, "C", fill=True)
-    pdf.cell(50, 7, str("Outcome"), 1, 1, "C", fill=True)
+    pdf.cell(25, 6, "Criteria", 1, 0, "L", fill=True)
+    pdf.cell(45, 6, str("Description"), 1, 0, "C", fill=True)
+    pdf.cell(30, 6, str("Score"), 1, 0, "C", fill=True)
+    pdf.cell(50, 6, str("Outcome"), 1, 1, "C", fill=True)
     pdf.set_font('arial', '', 11)
     pdf.set_fill_color(255,255,255)
     pdf.set_text_color(0,0,0)
     pdf.cell(10)
-    pdf.cell(25, 7, " Accuracy", 1, 0, "L")
-    pdf.cell(45, 7, "Did you get it right?", 1, 0, "C")
-    pdf.cell(30, 7, str(accu_score)+"% "+str(sum(accuracyl)*accu_weight)+" / "+str(student1.question_count*accu_weight), 1, 0, "C")
+    pdf.cell(25, 6, " Accuracy", 1, 0, "L")
+    pdf.cell(45, 6, "Did you get it right?", 1, 0, "C")
+    pdf.cell(30, 6, str(accu_score)+"% "+str(sum(accuracyl)*accu_weight)+" / "+str(student1.question_count*accu_weight), 1, 0, "C")
     if accu_score==100:
-        pdf.cell(50, 7, "Nice!", 1, 1, "C")
+        pdf.cell(50, 6, "Well done!", 1, 1, "C")
     else:
-        pdf.cell(50, 7, "Better luck next time!", 1, 1, "C")
+        pdf.cell(50, 6, "Better luck next time!", 1, 1, "C")
     pdf.cell(10)
-    pdf.cell(25, 7, " Speed", 1, 0, "L")
-    pdf.cell(45, 7, "How fast were you?", 1, 0, "C")
-    pdf.cell(30, 7, str(speed)+" minutes", 1, 0, "C")
+    pdf.cell(25, 6, " Speed", 1, 0, "L")
+    pdf.cell(45, 6, "How fast were you?", 1, 0, "C")
+    pdf.cell(30, 6, str(speed)+" minutes", 1, 0, "C")
     if accu_score==100:
-        pdf.cell(50, 7, "You're in the ring!", 1, 1, "C")
+        pdf.cell(50, 6, "You could win $100!", 1, 1, "C")
     else:
-        pdf.cell(50, 7, "Better luck next time!", 1, 1, "C")
+        pdf.cell(50, 6, "Better luck next time!", 1, 1, "C")
+    pdf.ln(5)
+    pdf.cell(10)
+    
+    pdf.set_fill_color(57, 143, 229)
+    pdf.set_text_color(255,255,255)
+    pdf.set_font('arial', 'B', 11)
+    pdf.cell(25, 10, " Result", 1, 0, "L", fill=True)
+    pdf.set_fill_color(255,255,255)
+    pdf.set_text_color(0,0,0)
+    pdf.set_font('arial', '', 11)
+    if student1.grade_level == 12:
+        pdf.cell(125, 10, "Grade 12? Forget it, you are ready to rock Calculus!", 1, 0, "C")
+    else :
+        pdf.cell(125, 10, "Your grade level is G"+str(student1.grade_level), 1, 0, "C")
     for i in range(0,student1.question_count):
         # Download the image
         getImage(imgl[i], i)
