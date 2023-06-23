@@ -278,7 +278,7 @@ def generateReportCollision(json_data):
     pdf.set_fill_color(57, 143, 229)
     pdf.set_text_color(255,255,255)
     pdf.cell(10)
-    pdf.cell(25, 6, "Criteria", 1, 0, "L", fill=True)
+    pdf.cell(25, 6, " Criteria", 1, 0, "L", fill=True)
     pdf.cell(45, 6, str("Description"), 1, 0, "C", fill=True)
     pdf.cell(30, 6, str("Score"), 1, 0, "C", fill=True)
     pdf.cell(50, 6, str("Outcome"), 1, 1, "C", fill=True)
