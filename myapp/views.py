@@ -240,12 +240,12 @@ def generateReportCollision(json_data):
     #set up of the header
     pdf.set_xy(0, 0)
     pdf.set_font('arial', 'B', 14)
-    pdf.image('myapp/prepbox_collision.png', x = 30, y = 10, w = 130, h = 0, type = '', link = '')
+    pdf.image('./prepbox_collision.png', x = 30, y = 20, w = 130, h = 0, type = '', link = '')
     #title
     #body
     pdf.set_font('arial', 'B', 11)
     #Summary part
-    pdf.ln(50)
+    pdf.ln(60)
     pdf.cell(10)
     pdf.cell(50, 8, "Contestant Name:", 0, 0, 'L')
     pdf.set_font('arial', '', 11)
@@ -312,12 +312,21 @@ def generateReportCollision(json_data):
         pdf.cell(50, 7, "Better luck next time!", 1, 1, "C")
     pdf.ln(5)
     pdf.cell(10)
+    pdf.add_page()
+    pdf.image("./submit.png", x=18, y=35, w=150, h=109.489)
+    pdf.ln(10)
+    pdf.set_font('arial', 'B', 13)
+    pdf.cell(7)
+    pdf.cell(25, 7, " Question 1", 0, 0, "L")
     for i in range(0,student1.question_count):
         # Download the image
         getImage(imgl[i], i)
-            
         pdf.add_page()
-        pdf.image(str(i)+".jpg", x=15, y=15, w=150, h=150)
+        pdf.ln(10)
+        pdf.set_font('arial', 'B', 13)
+        pdf.cell(7)
+        pdf.cell(24, 7, " Question 1", 0, 0, "L")
+        pdf.image(str(i)+".jpg", x=18, y=35, w=150, h=109.489)
 
     pdf_data = pdf.output(dest='S').encode('latin1')
     response = HttpResponse(pdf_data, content_type='application/pdf')
