@@ -310,14 +310,6 @@ def generateReportCollision(json_data):
         pdf.cell(50, 7, "You're in the ring!", 1, 1, "C")
     else:
         pdf.cell(50, 7, "Better luck next time!", 1, 1, "C")
-    pdf.ln(5)
-    pdf.cell(10)
-    pdf.add_page()
-    pdf.image("./submit.png", x=18, y=35, w=150, h=109.489)
-    pdf.ln(10)
-    pdf.set_font('arial', 'B', 13)
-    pdf.cell(7)
-    pdf.cell(25, 7, " Question 1", 0, 0, "L")
     for i in range(0,student1.question_count):
         # Download the image
         getImage(imgl[i], i)
@@ -325,7 +317,7 @@ def generateReportCollision(json_data):
         pdf.ln(10)
         pdf.set_font('arial', 'B', 13)
         pdf.cell(7)
-        pdf.cell(24, 7, " Question 1", 0, 0, "L")
+        pdf.cell(24, 7, " Question"+i, 0, 0, "L")
         pdf.image(str(i)+".jpg", x=18, y=35, w=150, h=109.489)
 
     pdf_data = pdf.output(dest='S').encode('latin1')
