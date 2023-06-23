@@ -240,7 +240,7 @@ def generateReportCollision(json_data):
     #set up of the header
     pdf.set_xy(0, 0)
     pdf.set_font('arial', 'B', 14)
-    pdf.image('./prepbox_collision.png', x = 30, y = 20, w = 130, h = 0, type = '', link = '')
+    pdf.image('myapp/prepbox_collision.png', x = 30, y = 20, w = 130, h = 0, type = '', link = '')
     #title
     #body
     pdf.set_font('arial', 'B', 11)
