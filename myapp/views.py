@@ -255,7 +255,6 @@ def generateReportCollision(json_data):
     pdf.cell(30, 7, str(student1.date), 0, 1, 'R')
     pdf.ln(7)
     #The results
-    pdf.ln(5)
     pdf.set_font('arial', 'B', 11)
     pdf.set_fill_color(57, 143, 229)
     pdf.set_text_color(255,255,255)
