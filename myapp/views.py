@@ -282,6 +282,19 @@ def generateReportCollision(json_data):
         pdf.cell(50, 6, "You could win $100!", 1, 1, "C")
     else:
         pdf.cell(50, 6, "Better luck next time!", 1, 1, "C")
+    pdf.ln(5)
+    pdf.cell(10)  
+    pdf.set_fill_color(57, 143, 229)
+    pdf.set_text_color(255,255,255)
+    pdf.set_font('arial', 'B', 11)
+    pdf.cell(25, 10, " Result", 1, 0, "L", fill=True)
+    pdf.set_fill_color(255,255,255)
+    pdf.set_text_color(0,0,0)
+    pdf.set_font('arial', '', 11)
+    if student1.grade_level == 12:
+        pdf.cell(125, 10, "Grade 12? Forget it, you are ready to rock Calculus!", 1, 0, "C")
+    else :
+        pdf.cell(125, 10, "Your grade level is G"+str(student1.grade_level), 1, 0, "C")
     pdf.ln(7)
     pdf.set_font('arial', 'B', 11)
     pdf.set_fill_color(57, 143, 229)
@@ -300,20 +313,7 @@ def generateReportCollision(json_data):
     pdf.set_font('arial', 'B', 11)
     pdf.cell(120, 6, "Total Score", "T", 0, "L")
     pdf.cell(30, 6, str(sum(accuracyl)), "T", 1, "R")
-    pdf.ln(5)
-    pdf.cell(10)
-    
-    pdf.set_fill_color(57, 143, 229)
-    pdf.set_text_color(255,255,255)
-    pdf.set_font('arial', 'B', 11)
-    pdf.cell(25, 10, " Result", 1, 0, "L", fill=True)
-    pdf.set_fill_color(255,255,255)
-    pdf.set_text_color(0,0,0)
-    pdf.set_font('arial', '', 11)
-    if student1.grade_level == 12:
-        pdf.cell(125, 10, "Grade 12? Forget it, you are ready to rock Calculus!", 1, 0, "C")
-    else :
-        pdf.cell(125, 10, "Your grade level is G"+str(student1.grade_level), 1, 0, "C")
+
     for i in range(0,student1.question_count):
         # Download the image
         getImage(imgl[i], i)
