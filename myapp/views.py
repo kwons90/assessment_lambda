@@ -307,7 +307,7 @@ def generateReportCollision(json_data):
     pdf.set_font('arial', '', 11)
     for i in range(0,student1.question_count):
         pdf.cell(10)
-        pdf.cell(120, 6, "Q"+str(i+1)+ ".: "+subjectl[i], 0, 0, "L")
+        pdf.cell(120, 6, "Q"+str(i+1)+ ". "+subjectl[i], 0, 0, "L")
         pdf.cell(30, 6, str(accuracyl[i]), 0, 1, "R")
     pdf.cell(10)
     pdf.set_font('arial', 'B', 11)
