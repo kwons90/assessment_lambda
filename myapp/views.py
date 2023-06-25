@@ -227,10 +227,10 @@ def generateReportCollision(json_data):
     result = student1.result
     accu_weight = 1
     speed = round(sum(result.speed),2)
-
     subjectl = result["subject"].tolist()
     accuracyl = result["accuracy"].tolist()
     imgl = result["image"].tolist()
+    accu_score = int(((sum(accuracyl)*accu_weight) / (student1.question_count*accu_weight))*100)
 
     pdf = FPDF()
     pdf.add_page()
@@ -301,7 +301,6 @@ def generateReportCollision(json_data):
     pdf.set_font('arial', 'B', 11)
     pdf.cell(120, 6, "Total Score", "T", 0, "L")
     pdf.cell(30, 6, str(sum(accuracyl)), "T", 1, "R")
-    accu_score = int(((sum(accuracyl)*accu_weight) / (student1.question_count*accu_weight))*100)
     pdf.ln(5)
     pdf.cell(10)
     
