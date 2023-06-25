@@ -283,7 +283,7 @@ def generateReportCollision(json_data):
         pdf.cell(50, 6, "You could win $100!", 1, 1, "C")
     else:
         pdf.cell(50, 6, "Better luck next time!", 1, 1, "C")
-    pdf.len(7)
+    pdf.ln(7)
     pdf.set_font('arial', 'B', 11)
     pdf.set_fill_color(57, 143, 229)
     pdf.set_text_color(255,255,255)
