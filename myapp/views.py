@@ -292,9 +292,9 @@ def generateReportCollision(json_data):
     pdf.set_text_color(0,0,0)
     pdf.set_font('arial', '', 11)
     if student1.grade_level == 12:
-        pdf.cell(125, 10, "Grade 12? Forget it, you are ready to rock Calculus!", 1, 0, "C")
+        pdf.cell(125, 10, "Grade 12? Forget it, you are ready to rock Calculus!", 1, 1, "C")
     else :
-        pdf.cell(125, 10, "Your grade level is G"+str(student1.grade_level), 1, 0, "C")
+        pdf.cell(125, 10, "Your grade level is G"+str(student1.grade_level), 1, 1, "C")
     pdf.ln(7)
     pdf.set_font('arial', 'B', 11)
     pdf.set_fill_color(57, 143, 229)
